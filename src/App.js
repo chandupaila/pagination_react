@@ -1,25 +1,42 @@
-import logo from './logo.svg';
+import {useState,useEffect} from 'react'
+import axios from 'axios'
+import Pagination from './Pagination';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const DisplayList = () => {
+  const [data,setData] = useState([])
+  const [perPage,setperPage] = useState([])
 
-export default App;
+
+  useEffect(() => {
+    axios.get('https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json').then(
+      res => {setData(res.data); setperPage(res.data.slice(0,10));}
+    )},[])
+
+    const pageHandler = (pageNUmber) => {
+      setperPage(data.slice((pageNUmber*10)-10,pageNUmber*10))
+    }
+ 
+
+  return(
+    <center>
+      {perPage.length > 0 ?
+      <div>
+        {perPage.map(eachItem => <h1>{eachItem.name}</h1>)}
+        <Pagination data={data} pageHandler={pageHandler} />
+         </div> :
+        <p>no data available</p>
+      }
+    </center>
+  )
+
+}
+  
+
+
+
+
+
+
+
+export default DisplayList;
